@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="คาถา 108">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<title>คาถาเงินล้าน 108</title>
+<style>
+  :root{--bg:#faf8f3;--ink:#1d1b16;--sub:#6b665b;--line:#e4dfd3;--acc:#8a5a00;--acc2:#c9a227;--on:#fff}
+  @media (prefers-color-scheme:dark){:root{--bg:#15130f;--ink:#f3efe6;--sub:#a59f92;--line:#2d2a24;--acc:#d9a93a;--acc2:#e8c766;--on:#15130f}}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Sukhumvit Set","Thonburi",system-ui,sans-serif}
+  body{min-height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 12px)}
+  header{display:flex;justify-content:space-between;align-items:baseline;padding:14px 4px 6px}
+  h1{font-size:18px;margin:0;font-weight:600}
+  .streak{font-size:13px;color:var(--sub)}
+  .chant{flex:1;overflow:auto;padding:8px 4px 12px;font-size:20px;line-height:1.75}
+  .chant .n{color:var(--sub);font-size:14px;margin-bottom:4px}
+  .dots{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:6px 0 10px}
+  .dot{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--sub)}
+  .dot.done{background:var(--acc);border-color:var(--acc);color:var(--on)}
+  .dot.cur{border-color:var(--ink);color:var(--ink)}
+  #tap{width:100%;min-height:170px;border:none;border-radius:24px;background:var(--acc);color:var(--on);font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;touch-action:manipulation;user-select:none;-webkit-user-select:none;transition:transform .08s}
+  #tap:active{transform:scale(.98)}
+  #tap.full{background:var(--acc2)}
+  #big{font-size:60px;font-weight:700;line-height:1}
+  #small{font-size:17px;opacity:.92}
+  .row{display:flex;gap:10px;justify-content:center;margin-top:10px}
+  .row button{background:transparent;border:1px solid var(--line);color:var(--sub);border-radius:999px;padding:8px 16px;font:inherit;font-size:14px}
+  .flash{animation:fl .5s}
+  @keyframes fl{0%{filter:brightness(1.4)}100%{filter:none}}
+</style>
+</head>
+<body>
+<header><h1>คาถาเงินล้าน</h1><span class="streak" id="streak"></span></header>
+<div class="chant">
+  <div class="n">ตั้งนะโม 3 จบก่อน ว่าทั้งบทนับเป็น 1 จบ</div>
+  สัมปะจิตฉามิ นาสังสิโม<br>
+  พรหมา จะ มหาเทวา สัพเพยักขา ปะรายันติ<br>
+  พรหมา จะ มหาเทวา อภิลาภา ภะวันตุ เม<br>
+  มหาปุญโญ มหาลาโภ ภะวันตุ เม มิเตพาหุหะติ<br>
+  พุทธะมะอะอุ นะโมพุทธายะ<br>
+  วิระทะโย วิระโคนายัง วิระหิงสา<br>
+  วิระทาสี วิระทาสา วิระอิตถิโย<br>
+  พุทธัสสะ มานีมามะ พุทธัสสะ สวาโหม<br>
+  สัมปะติจฉามิ เพ็งๆ พาๆ หาๆ ฤาๆ
+</div>
+<div class="dots" id="dots"></div>
+<button id="tap" aria-label="นับ 1 จบ"><span id="big">0/9</span><span id="small"></span></button>
+<div class="row"><button id="undo">ย้อน 1 จบ</button><button id="reset">ล้างยอดวันนี้</button></div>
+<script>
+const GOAL=108,PER=9,KEY="ngoenlan-v1";
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+let db;try{db=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){db={}}
+db.days=db.days||{};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}};
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
+const get=()=>db.days[today()]||0;
+const set=v=>{db.days[today()]=v;save();render()};
+function streak(){let n=0;const d=new Date();if((db.days[today()]||0)<GOAL)d.setDate(d.getDate()-1);
+  for(;;){const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  if((db.days[k]||0)>=GOAL){n++;d.setDate(d.getDate()-1)}else break}return n}
+function render(){const c=get(),done=c>=GOAL,rd=Math.floor(c/PER),inr=done?PER:c%PER,cur=done?12:rd+1;
+  document.getElementById("big").textContent=done?"ครบ 108 สาธุ":inr+"/"+PER;
+  document.getElementById("small").textContent="รอบที่ "+cur+"/12 · รวม "+c+"/"+GOAL+" จบ";
+  document.getElementById("tap").classList.toggle("full",done);
+  const s=streak();document.getElementById("streak").textContent=s?"ต่อเนื่อง "+s+" วัน":"";
+  const dots=document.getElementById("dots");dots.innerHTML="";
+  for(let i=0;i<12;i++){const e=document.createElement("div");e.className="dot"+(i<rd?" done":(i===rd&&!done?" cur":""));e.textContent=i+1;dots.appendChild(e)}}
+let ac;function chime(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.25,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+1.2);o.start();o.stop(ac.currentTime+1.2)}catch(e){}}
+document.getElementById("tap").addEventListener("click",()=>{const c=get();if(c>=GOAL)return;const n=c+1;set(n);
+  if(navigator.vibrate)navigator.vibrate(n%PER===0?[80,60,80]:20);
+  if(n%PER===0){chime();const t=document.getElementById("tap");t.classList.remove("flash");void t.offsetWidth;t.classList.add("flash")}});
+document.getElementById("undo").addEventListener("click",()=>set(Math.max(0,get()-1)));
+document.getElementById("reset").addEventListener("click",()=>{if(confirm("ล้างยอดของวันนี้เป็น 0?"))set(0)});
+document.addEventListener("visibilitychange",render);
+render();
+</script>
+</body>
+</html>
